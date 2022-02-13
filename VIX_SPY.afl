@@ -1,0 +1,31 @@
+//#include_once "Formulas\Norgate Data\Norgate Data Functions.afl"
+SetPositionSize(400, spsPercentOfEquity );
+SetOption("MaxOpenPositions", 1);
+SetOption("AllowSameBarExit", True);
+SetTradeDelays(0,0,0,0);
+SetForeign("CBOE:VIX", False, False); 
+foreign_atr = Ref(ATR(1), -1);
+RestorePriceArrays();
+
+parameter = Optimize("parameter", 1.02, 1, 1.05, 0.01);
+//parameter2 = Optimize("parameter2", 1.2, 1, 1.5, 0.1);
+
+Index = Foreign("CBOE:VIX", "C", True);
+IndexOpen = Foreign("VIX", "O", True);
+
+BuyPrice = Open;
+SellPrice = Close;
+
+Buy = IndexOpen*parameter < ref(Index, -1) AND foreign_atr > 1;
+//Buy = IndexOpen*parameter2 < ref(Index, -1);
+
+Sell = C > 0;
+
+Filter = Open;
+
+AddColumn(IndexOpen, "IndexOpen");
+AddColumn(Index, "IndexClose");
+AddColumn(Open, "Open");
+AddColumn(Close, "Close");
+AddColumn(Buy, "Buy");
+AddColumn(foreign_atr, "foreign_atr");
