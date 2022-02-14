@@ -1,11 +1,3 @@
-//+------------------------------------------------------------------+
-//|                                                     MC_EA_V0.mq5 |
-//|                                  https://t.me/mahdi_ebrahimzadeh |
-//|                                          https://www.pipcrop.com |
-//+------------------------------------------------------------------+
-#property copyright "https://t.me/mahdi_ebrahimzadeh"
-#property link      "https://www.pipcrop.com"
-#property version   "1.00"
 
 #include <trade/trade.mqh>
 #include <trade/DealInfo.mqh>
