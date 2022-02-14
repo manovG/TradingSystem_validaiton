@@ -1,0 +1,80 @@
+//#include_once "Formulas\Norgate Data\Norgate Data Functions.afl"
+//Norgate Data provides information whether a share has been part of an index for example at 2015 list of companies popula SP500 are di
+SetPositionSize(20, spsPercentOfEquity);
+SetOption("MaxOpenPositions", 5);
+SetOption("AllowSameBarExit", False);
+SetOption("CommissionMode", 0);
+SetTradeDelays(1,1,0,0);
+//ApplyStop(stopTypeNBar, stopModeBars, 5);
+
+BuyPrice = Open;
+SellPrice = Open;
+
+PositionScore = Random();
+
+Index = Foreign("SPX", "C", True);
+IndexMA = MA(Index, 200);
+
+//highDayOptimize = Optimize("HHV", 10, 5, 30, 5);
+//lowDayOptimize = Optimize("LLV", 15, 5, 30, 5);
+rocOptimize = Optimize("ROC", 50, 0, 100, 10);
+
+MA200 = MA(C, 200);
+ROC200 = ROC(C, 200);
+
+High7 = HHV(C, 5);
+Low7 = LLV(C, 5);
+
+Buy = C <= Low7 AND ROC(C, 100)> rocOptimize AND C > 10 AND Index > IndexMA;
+Sell = C >= High7;
+
+//Code which include only SP500 index shares at the test time (i.e. we avoid survivership bias)
+//Buy = C <= Low7 AND C > MA200 AND Index > IndexMA AND NorgateIndexConstituentTimeSeries("S&P 500") AND Ref(ROC(C, 200),-1) > rocOptimize;  // AND NorgateIndexConstituentTimeSeries("S&P 500")
+
+
+// removing buys you don't want
+intrade = False;
+for( i = 0; i < BarCount; i++ )
+{
+	if( NOT intrade )
+	{
+		if( Buy[ i ] ) 
+		{
+			intrade = True;
+		
+			// same bar sell
+			if( Sell[ i ] ) intrade = False;
+		}
+	}
+	else
+	{
+		if( Sell[ i ] ) 
+		{
+			intrade = False;
+			Buy[ i ] = False; // remove buy if exited this bar
+		}
+	}
+}  
+
+
+
+//This code combines different equity curves:
+//PlotForeign("~~~ISEQUITY","In-Sample Equity", colorRed, styleLine);
+//PlotForeign("~~~OSEQUITY","Out-Of-Sample Equity", colorGreen, styleLine);
+//Title = "{{NAME}} - {{INTERVAL}} {{DATE}} {{VALUES}}"; 
+
+
+//Used for exploration of the data:
+Filter = C;
+
+AddColumn(C, "Close");
+AddColumn(Low7, "LLV");
+AddColumn(High7, "HHV");
+AddColumn(O, "Open");
+AddColumn(MA200, "MA200");
+AddColumn(ROC200, "ROC200");
+
+
+Plot(High7, "HHV", colorRed, styleLine);
+Plot(Low7, "LLV", colorGreen, styleLine);
+
