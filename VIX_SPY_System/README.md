@@ -1,4 +1,4 @@
-TradingSystem_validaiton
+#TradingSystem_validaiton
 
 This repository consist of the AFL code (for backtesting the strategy) and .docx file.
 
